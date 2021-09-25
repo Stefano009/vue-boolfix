@@ -1,7 +1,7 @@
 <template>
   <nav>
     <div class="title">
-      <h3>BOOLFIX</h3>
+      <span>BOOLFIX</span>
     </div>
     <div class="search">
       <input @keyup.enter="userQuery" v-model="searchMovie" type="text">
@@ -20,7 +20,9 @@ export default {
   },
   methods: {
     userQuery() {
-      return this.$parent.APICall(this.searchMovie);
+      if (this.searchMovie == '')
+        return this.$parent.APICall('void'), this.$parent.APICallTv('void');
+      return this.$parent.APICall(this.searchMovie), this.$parent.APICallTv(this.searchMovie);
     }
   }
 }
@@ -28,5 +30,19 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
+nav {
+  height: 40px;
+  background-color: rgba(30, 30, 30, 1);
+  display:flex;
+  padding: 0 20px;
+  justify-content: space-between;
+  align-items: center;
+  .title {
+    color: red;
+    height:100%;
+    display: flex;
+    align-items:center;
+    padding-top: 10px; 
+  }
+}
 </style>

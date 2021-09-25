@@ -4,6 +4,7 @@
     />
     <VideoList
     :videosArray="queryResults"
+    :tvArray="queryResultsTv"
      />
   </div>
 </template>
@@ -20,12 +21,13 @@ export default {
       flag: false,
       queryDigested: '',
       queryResults: [],
+      queryResultsTv: [],
       APIUrl : 'https://api.themoviedb.org/3/search/',
         typeOfVideos: {
             film:'movie',
-            tvSeries: ''
+            tvSeries: 'tv'
         },
-        APILanguage:'&language=it',
+        APILanguage:'&language=it_IT',
         APIKey : '?api_key=45ceb3fa9940738343c6705b54fdb57f',
         query: '&query='
         }
@@ -46,11 +48,25 @@ export default {
                     .catch(err => {
                         console.log(err)
                     })
+            },
+    APICallTv(queryStorer) {
+                axios.get(this.APIUrl+this.typeOfVideos.tvSeries+this.APIKey+this.APILanguage+this.query+queryStorer)
+                    .then(res => {
+                    this.queryResultsTv = res.data.results
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
             }   
   }
 }
 </script>
 
 <style lang="scss">
+@import './assets/style/general.scss';
 
+#app {
+  height:100vh;
+  width: 100vw;
+}
 </style>
