@@ -68,5 +68,7 @@ export default {
 #app {
   height:100vh;
   width: 100vw;
+  background-color: #090909;
+  overflow-y: scroll;
 }
 </style>
