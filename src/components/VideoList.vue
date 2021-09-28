@@ -43,6 +43,9 @@
                         <h3 v-show="(index < 5)" class="castNames" v-for="(credit, index) in movieCredits" :key="credit.id">
                                 cast: {{credit.name}}
                         </h3 >
+                        <h3 class="genres" v-for=" (genre, index) in tv.genre_ids" :key="index">
+                            {{checkGenre(genre)}}
+                        </h3>
                     </div>
                         <div class="inner-card-back" v-else>
                             <h3>Titolo: {{tv.name}}</h3>
