@@ -36,6 +36,9 @@ export default {
     Nav,
     VideoList,
   },
+  created:{
+    APICall();
+  },
   methods: {
     queryStorer(text) {
       this.queryDigested = text

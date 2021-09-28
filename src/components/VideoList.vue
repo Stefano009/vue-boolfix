@@ -120,8 +120,8 @@ div {
         }
         .card-back {
             background-color:black;
-            height:100%;
-            width: 100%;
+            width:calc(100vw / 9);
+            height: 250px;
             color:white;
             font-size: .9rem;
             padding: 0 10px;
@@ -138,7 +138,7 @@ div {
         //     transition-duration: 1s;     
         // }
         li:hover .card-front {
-            animation: myAnim 1s ease-in-out 0s 1 normal forwards;
+            animation: myAnim .5s ease-in-out 0s 1 normal forwards;
         }
         @keyframes myAnim {
             0% {
