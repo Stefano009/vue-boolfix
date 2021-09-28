@@ -1,19 +1,21 @@
 <template>
-  <div>
+  <div class="wrapper">
       <h1>FILM</h1>
       <ul>
         <li v-for="(video, index) in videosArray" :key="index">
-            <div class="card-front">
+            <div class="inner">
+                <div class="card-front">
                 <img :src="poster(video.poster_path)" :alt="video.title">
-            </div>
-            <div class="card-back">
-                <h3>Titolo: {{video.title}}</h3>
-                <h3> Titolo originale:  {{video.original_title}}</h3>
-                <country-flag :country='getFlag(video.original_language)' size='small'/>
-                <!-- capire perchè si duplicano le chiavi -->
-                <i v-for="(n, index) in stars(video.vote_average)" :key="index" class="fas fa-star"></i>
-                <div v-if="(stars(video.vote_average) < 5)" class="emptyStar">
-                <i v-for="(n, index) in (5-(stars(video.vote_average)))" :key="index" class="far fa-star"></i>
+                </div>
+                <div class="card-back">
+                    <h3>Titolo: {{video.title}}</h3>
+                    <h3> Titolo originale:  {{video.original_title}}</h3>
+                    <country-flag :country='getFlag(video.original_language)' size='small'/>
+                    <!-- capire perchè si duplicano le chiavi -->
+                    <div class="moveStars">
+                    <i v-for="n in 5" :key="n" class="fa-star" :class="n <= stars(video.vote_average) ? 'fas' : 'far'"></i>
+                    </div>
+                    <p>{{video.overview}}</p>                
                 </div>
             </div>
         </li>
@@ -21,22 +23,22 @@
       <h1>TV SERIES</h1>
       <ul>
           <li v-for="(tv, l) in tvArray" :key="l">
-            <div class="card-front">
+            <div class="inner">
+                <div class="card-front">
                   <img :src="poster(tv.poster_path)" :alt="tv.title">
-            </div>
-            <div class="card-back">
-                <h3>Titolo: {{tv.name}}</h3>
-                <!-- <h3>{{imgUrl+tv.poster_path}}</h3> --> 
-                <h3> Titolo originale:  {{tv.original_name}}</h3>
-                <!-- <span> la lingua è {{tv.original_language}}</span> -->
-                <country-flag :country='getFlag(tv.original_language)' size='small'/>
-                <!-- capire perchè si duplicano le chiavi -->
-                <i v-show="(stars(tv.vote_average) != 0)" v-for="(n, index) in stars(tv.vote_average)" :key="index" class="fas fa-star"></i>
-                <div v-if="(stars(tv.vote_average) < 5)" class="emptyStar">
-                <i v-for="(n, index) in (5-(stars(tv.vote_average)))" :key="index" class="far fa-star"></i>
                 </div>
-            </div>
-            
+                <div class="card-back">
+                    <h3>Titolo: {{tv.name}}</h3>
+                    <!-- <h3>{{imgUrl+tv.poster_path}}</h3> --> 
+                    <h3> Titolo originale:  {{tv.original_name}}</h3>
+                    <country-flag :country='getFlag(tv.original_language)' size='small'/>
+                    <!-- capire perchè si duplicano le chiavi -->
+                    <div class="moveStars">
+                    <i v-for="n in 5" :key="n" class="fa-star" :class="n <= stars(tv.vote_average) ? 'fas' : 'far'"></i>
+                    </div>
+                    <p>{{tv.overview}}</p>
+                </div>
+            </div>            
           </li>
       </ul>
   </div>
@@ -63,6 +65,7 @@ export default {
     methods:{
          getFlag(language){
             if(language=="en")return "gb"
+            if(language=="ja")return "jp"
             return language
         },
         poster(string) {
@@ -73,7 +76,7 @@ export default {
             return this.imgUrl+string;
         },
         stars(number) {
-            let starsNumber = (number/2).toFixed(0);
+            let starsNumber = Math.ceil(number/2).toFixed(0);
             console.log(starsNumber)
             return parseInt(starsNumber);
         }
@@ -82,7 +85,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-div {
+.wrapper {
+    height: 100vh;
+    overflow-y: scroll;
     h1 {
             text-align: center;
             color:gray;
@@ -94,13 +99,23 @@ div {
         display: flex;
         flex-wrap: wrap;
         list-style: none;
-        li {
-            display: flex;
-            width:calc(100vw / 9);
-            height: 250px;
+        li{
+            background-color: transparent;
+            perspective: 1000px;
+            width: calc(100vw / 9);
+            height: 240px;
             border: 1px solid white;
-            box-shadow: 4px 4px 20px black;
+            box-shadow: 4px 4px 20px #090909;
             overflow: hidden;
+            text-align: center;
+        }
+        .inner {
+            position: relative;
+            display: inline-block;
+            width:100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
             h3 {
                 padding:5px 0;
                 font-size: .8rem;
@@ -112,49 +127,75 @@ div {
             width:calc(100vw / 9);
             height: 100%;
             object-fit: fill;
-            background-color:black
+            background-color:#090909
         }
         .emptyStar {
             background-color: #d3cfcf;
             display:inline;   
         }
         .card-back {
-            background-color:black;
+            background-color:#090909;
             width:calc(100vw / 9);
-            height: 250px;
+            height: 100%;
             color:white;
             font-size: .9rem;
             padding: 0 10px;
+            transform: rotateY(180deg);
+            .moveStars::before {
+                content: "Voto:";
+                color: white;
+                padding-right: 10px;
+                font-weight: 700;
+            }
+            p {
+                display: inline-block;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                width: 100%;
+                padding: 5px 0;
+            }
         }
-        .card-back i,
         .card-back div {
             color:gold;
-            background-color: black;
-
+            background-color: #090909;
+            margin: 0 auto;
         }
         // li:hover div img,
         // li:hover .card-front,
         // {
         //     transition-duration: 1s;     
         // }
-        li:hover .card-front {
-            animation: myAnim .5s ease-in-out 0s 1 normal forwards;
+        li:hover .inner {
+            // animation: myAnim .5s ease-in-out 0s 1 normal forwards;
+            transform: rotateY(180deg);
         }
-        @keyframes myAnim {
-            0% {
-                transform: scaleX(1);
-                width:100%;
-                // height: 100%;
-                transform-origin: 0% 50%;
-            }
+        .card-front, .card-back {
+            position: absolute;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+        }
+        .card-front {
+            .flip-card-front {
+            background-color: #bbb;
+            color: black;
+}
+        }
+        // @keyframes myAnim {
+        //     0% {
+        //         transform: scaleX(1);
+        //         width:100%;
+        //         // height: 100%;
+        //         transform-origin: 0% 50%;
+        //     }
 
-            100% {
-                transform: scaleX(0);
-                width:0;
-                // height: 0;
-                transform-origin: 0% 50%;
-            }
-         }
+        //     100% {
+        //         transform: scaleX(0);
+        //         width:0;
+        //         // height: 0;
+        //         transform-origin: 0% 50%;
+        //     }
+        //  }
     }
 }
 </style>

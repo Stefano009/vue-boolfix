@@ -22,29 +22,32 @@ export default {
       queryDigested: '',
       queryResults: [],
       queryResultsTv: [],
+      firstResult:'a',
       APIUrl : 'https://api.themoviedb.org/3/search/',
-        typeOfVideos: {
-            film:'movie',
-            tvSeries: 'tv'
-        },
-        APILanguage:'&language=it_IT',
-        APIKey : '?api_key=45ceb3fa9940738343c6705b54fdb57f',
-        query: '&query='
-        }
+      typeOfVideos: {
+          film:'movie',
+          tvSeries: 'tv'
+      },
+      APILanguage:'&language=it_IT',
+      APIKey : '?api_key=45ceb3fa9940738343c6705b54fdb57f',
+      query: '&query=',
+      page: '&page=1',
+      }
   },
   components: {
     Nav,
     VideoList,
   },
-  created:{
-    APICall();
+  created: function() {
+    this.APICall(this.firstResult) 
+    this.APICallTv(this.firstResult) 
   },
   methods: {
     queryStorer(text) {
       this.queryDigested = text
     },
     APICall(queryStorer) {
-                axios.get(this.APIUrl+this.typeOfVideos.film+this.APIKey+this.APILanguage+this.query+queryStorer)
+                axios.get(this.APIUrl+this.typeOfVideos.film+this.APIKey+this.APILanguage+this.query+queryStorer+this.page)
                     .then(res => {
                     this.queryResults = res.data.results
                     })
@@ -53,7 +56,7 @@ export default {
                     })
             },
     APICallTv(queryStorer) {
-                axios.get(this.APIUrl+this.typeOfVideos.tvSeries+this.APIKey+this.APILanguage+this.query+queryStorer)
+                axios.get(this.APIUrl+this.typeOfVideos.tvSeries+this.APIKey+this.APILanguage+this.query+queryStorer+this.page)
                     .then(res => {
                     this.queryResultsTv = res.data.results
                     })
@@ -67,11 +70,12 @@ export default {
 
 <style lang="scss">
 @import './assets/style/general.scss';
+@import '~@fortawesome/fontawesome-free/css/all.min.css';
 
 #app {
   height:100vh;
   width: 100vw;
   background-color: #090909;
-  overflow-y: scroll;
+  overflow-y: hidden;
 }
 </style>

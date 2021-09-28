@@ -20,8 +20,6 @@ export default {
   },
   methods: {
     userQuery() {
-      if (this.searchMovie == '')
-        return this.$parent.APICall(' '), this.$parent.APICallTv(' ');
       return this.$parent.APICall(this.searchMovie), this.$parent.APICallTv(this.searchMovie);
     }
   }
