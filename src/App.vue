@@ -30,8 +30,8 @@ export default {
       },
       APILanguage:'&language=it_IT',
       APIKey : '?api_key=45ceb3fa9940738343c6705b54fdb57f',
-      query: '&query=',
-      page: '&page=1',
+      query: '&query=', 
+      movieCredits: '/movie/{movie_id}/credits'
       }
   },
   components: {
@@ -47,7 +47,7 @@ export default {
       this.queryDigested = text
     },
     APICall(queryStorer) {
-                axios.get(this.APIUrl+this.typeOfVideos.film+this.APIKey+this.APILanguage+this.query+queryStorer+this.page)
+                axios.get(this.APIUrl+this.typeOfVideos.film+this.APIKey+this.APILanguage+this.query+queryStorer)
                     .then(res => {
                     this.queryResults = res.data.results
                     })
@@ -56,14 +56,14 @@ export default {
                     })
             },
     APICallTv(queryStorer) {
-                axios.get(this.APIUrl+this.typeOfVideos.tvSeries+this.APIKey+this.APILanguage+this.query+queryStorer+this.page)
+                axios.get(this.APIUrl+this.typeOfVideos.tvSeries+this.APIKey+this.APILanguage+this.query+queryStorer)
                     .then(res => {
                     this.queryResultsTv = res.data.results
                     })
                     .catch(err => {
                         console.log(err)
                     })
-            }   
+          },
   }
 }
 </script>

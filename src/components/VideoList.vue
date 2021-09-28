@@ -2,41 +2,57 @@
   <div class="wrapper">
       <h1>FILM</h1>
       <ul>
-        <li v-for="(video, index) in videosArray" :key="index">
-            <div class="inner">
+        <li  v-for="video in videosArray" :key="video.id">
+            <div @mouseleave="toggleFunctionLeave" @click="toggleFunction(video.id)" class="inner">
                 <div class="card-front">
                 <img :src="poster(video.poster_path)" :alt="video.title">
                 </div>
                 <div class="card-back">
-                    <h3>Titolo: {{video.title}}</h3>
-                    <h3> Titolo originale:  {{video.original_title}}</h3>
-                    <country-flag :country='getFlag(video.original_language)' size='small'/>
-                    <!-- capire perchè si duplicano le chiavi -->
-                    <div class="moveStars">
-                    <i v-for="n in 5" :key="n" class="fa-star" :class="n <= stars(video.vote_average) ? 'fas' : 'far'"></i>
+                    <div class="apiMovie" v-if="toggle">
+                        <h3 v-show="(index < 5)" class="castNames" v-for="(credit, index) in movieCredits" :key="credit.id">
+                                cast: {{credit.name}}
+                        </h3 >
                     </div>
-                    <p>{{video.overview}}</p>                
+                    <div class="inner-card-back" v-else>
+                        <h3>Titolo: {{video.title}}</h3>
+                        <h3> Titolo originale:  {{video.original_title}}</h3>
+                        <country-flag :country='getFlag(video.original_language)' size='small'/>
+                        <!-- capire perchè si duplicano le chiavi -->
+                        <div class="moveStars">
+                        <i v-for="n in 5" :key="n" class="fa-star" :class="n <= stars(video.vote_average) ? 'fas' : 'far'"></i>
+                        </div>
+                        <p>{{video.overview}}</p> 
+                    </div>  
+                            
                 </div>
             </div>
         </li>
       </ul>
       <h1>TV SERIES</h1>
       <ul>
-          <li v-for="(tv, l) in tvArray" :key="l">
-            <div class="inner">
+          <li v-for="tv in tvArray" :key="tv.id">
+            <div @mouseleave="toggleFunctionLeave" @click="toggleTv(tv.id)" class="inner">
                 <div class="card-front">
                   <img :src="poster(tv.poster_path)" :alt="tv.title">
                 </div>
                 <div class="card-back">
-                    <h3>Titolo: {{tv.name}}</h3>
-                    <!-- <h3>{{imgUrl+tv.poster_path}}</h3> --> 
-                    <h3> Titolo originale:  {{tv.original_name}}</h3>
-                    <country-flag :country='getFlag(tv.original_language)' size='small'/>
-                    <!-- capire perchè si duplicano le chiavi -->
-                    <div class="moveStars">
-                    <i v-for="n in 5" :key="n" class="fa-star" :class="n <= stars(tv.vote_average) ? 'fas' : 'far'"></i>
+                    <div class="apiMovie" v-if="toggle">
+                        <h3 v-show="(index < 5)" class="castNames" v-for="(credit, index) in movieCredits" :key="credit.id">
+                                cast: {{credit.name}}
+                        </h3 >
                     </div>
-                    <p>{{tv.overview}}</p>
+                        <div class="inner-card-back" v-else>
+                            <h3>Titolo: {{tv.name}}</h3>
+                        <!-- <h3>{{imgUrl+tv.poster_path}}</h3> --> 
+                        <h3> Titolo originale:  {{tv.original_name}}</h3>
+                        <country-flag :country='getFlag(tv.original_language)' size='small'/>
+                        <!-- capire perchè si duplicano le chiavi -->
+                        <div class="moveStars">
+                        <i v-for="n in 5" :key="n" class="fa-star" :class="n <= stars(tv.vote_average) ? 'fas' : 'far'"></i>
+                        </div>
+                        <p>{{tv.overview}}</p>
+                    </div>
+                    <!-- <p v-if="toggle">{{videoCredits.cast.name}}</p>  -->
                 </div>
             </div>            
           </li>
@@ -46,12 +62,16 @@
 
 <script>
 import CountryFlag from 'vue-country-flag';
+import axios from 'axios'
 // import Card from './Card.vue';
 export default {
     name: 'VideoList',
     data() {
        return {
            imgUrl: 'https://image.tmdb.org/t/p/w342/',
+           movieCredits:[],
+           tvCredits:[],
+           toggle:false,
        }
     },
     components:{
@@ -63,6 +83,24 @@ export default {
         tvArray : Array
     },
     methods:{
+        toggleFunction(index) {
+            this.toggle = !this.toggle
+            console.log(index)
+            this.APICallMovieCredits(index)
+        },
+        toggleTv(index) {
+            this.toggle = !this.toggle
+            console.log(index)
+            this.APICallTvCredits(index)
+        },
+        toggleFunctionLeave() {
+            if(this.toggle == false)
+            return
+
+            this.toggle = !this.toggle;
+            this.tvCredits = [];
+            this.movieCredits = [];
+        },
          getFlag(language){
             if(language=="en")return "gb"
             if(language=="ja")return "jp"
@@ -79,7 +117,27 @@ export default {
             let starsNumber = Math.ceil(number/2).toFixed(0);
             console.log(starsNumber)
             return parseInt(starsNumber);
-        }
+        },
+         APICallMovieCredits(filmId) {
+                axios.get(`https://api.themoviedb.org/3/movie/${filmId}/credits?api_key=e99307154c6dfb0b4750f6603256716d&language=it_IT`)
+                    .then(res => {
+                        console.log(res.data.cast)
+                        return this.movieCredits = res.data.cast
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+          },
+          APICallTvCredits(tvId) {
+                axios.get(`https://api.themoviedb.org/3//person/${tvId}/tv_credits?api_key=e99307154c6dfb0b4750f6603256716d&language=it_IT`)
+                    .then(res => {
+                        console.log(res.data.cast)
+                        return this.tvCredits = res.data.cast
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+          },
     }
 }
 </script>
@@ -93,7 +151,6 @@ export default {
             color:gray;
         }
     ul {
-        height: 100%;
         width:70%;
         margin: 0 auto;
         display: flex;
@@ -135,17 +192,18 @@ export default {
         }
         .card-back {
             background-color:#090909;
+            margin: 30px auto;
             width:calc(100vw / 9);
             height: 100%;
-            color:white;
-            font-size: .9rem;
-            padding: 0 10px;
             transform: rotateY(180deg);
             .moveStars::before {
                 content: "Voto:";
                 color: white;
                 padding-right: 10px;
                 font-weight: 700;
+            }
+            p::before {
+                content: 'Overview: '; 
             }
             p {
                 display: inline-block;
@@ -154,7 +212,9 @@ export default {
                 text-overflow: ellipsis;
                 width: 100%;
                 padding: 5px 0;
+                font-size: .6rem;
             }
+            
         }
         .card-back div {
             color:gold;
@@ -179,8 +239,22 @@ export default {
             .flip-card-front {
             background-color: #bbb;
             color: black;
-}
+            }
         }
+        .apiMovie {
+            height: 1rem;
+            color: white;
+        }
+        .castNames {
+            color: white;
+            padding: 5px;
+
+        }
+        .inner-card-back {
+                color:white !important;
+                font-size: .9rem;
+                padding: 0 10px;
+            }
         // @keyframes myAnim {
         //     0% {
         //         transform: scaleX(1);
