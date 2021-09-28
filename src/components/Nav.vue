@@ -4,8 +4,9 @@
       <span>BOOLFIX</span>
     </div>
     <div class="search">
-      <select name="genres" id="">
-        <option v-for="genre in movieId" :value="genre.name" :key="genre.id"> {{ genre.name }}</option>
+      <select @change="$emit('option', selected)" v-model="selected" name="genres" id="">
+        <option value="">Select genre</option>
+        <option v-for="genre in movieId" :value="genre.name" :key="genre.id" > {{ genre.name }}</option>
       </select>
       <input @keyup.enter="userQuery" v-model="searchMovie" type="text">
       <button @click="userQuery" >Search</button>
@@ -20,6 +21,7 @@ export default {
   data() {
     return{
       searchMovie: '',
+      selected: '',
       movieId: [],
 
     }
@@ -32,7 +34,7 @@ export default {
     userQuery() {
       return this.$parent.APICall(this.searchMovie), this.$parent.APICallTv(this.searchMovie);
     },
-     APICallMovieGenre() {
+    APICallMovieGenre() {
                 axios.get('https://api.themoviedb.org/3/genre/movie/list?api_key=e99307154c6dfb0b4750f6603256716d')
                     .then(res => {
                         return this.movieId = res.data.genres

@@ -91,7 +91,8 @@ export default {
     },
     props: {
         videosArray : Array,
-        tvArray : Array
+        tvArray : Array,
+        option : String,
     },
     methods:{
         toggleFunction(index) {

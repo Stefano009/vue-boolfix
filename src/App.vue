@@ -1,10 +1,12 @@
 <template>
   <div id="app">
     <Nav
+    @option="selectedOption"
     />
     <VideoList
     :videosArray="queryResults"
     :tvArray="queryResultsTv"
+    :option="option"
      />
   </div>
 </template>
@@ -19,6 +21,7 @@ export default {
   data() {
     return {
       flag: false,
+      option:'',
       queryDigested: '',
       queryResults: [],
       queryResultsTv: [],
@@ -45,6 +48,9 @@ export default {
   methods: {
     queryStorer(text) {
       this.queryDigested = text
+    },
+    selectedOption(text){
+      this.option = text;
     },
     APICall(queryStorer) {
                 axios.get(this.APIUrl+this.typeOfVideos.film+this.APIKey+this.APILanguage+this.query+queryStorer)
