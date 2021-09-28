@@ -79,7 +79,6 @@ export default {
            tvCredits:[],
            toggle:false,
            movieId: [],
-           filteredId: [],
        }
     },
     created: function() {
