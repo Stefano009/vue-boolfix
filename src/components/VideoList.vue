@@ -12,6 +12,9 @@
                         <h3 v-show="(index < 5)" class="castNames" v-for="(credit, index) in movieCredits" :key="credit.id">
                                 cast: {{credit.name}}
                         </h3 >
+                        <h3 class="genres" v-for=" (genre, index) in video.genre_ids" :key="index">
+                            {{checkGenre(genre)}}
+                        </h3>
                     </div>
                     <div class="inner-card-back" v-else>
                         <h3>Titolo: {{video.title}}</h3>
@@ -72,7 +75,13 @@ export default {
            movieCredits:[],
            tvCredits:[],
            toggle:false,
+           movieId: [],
+           filteredId: [],
        }
+    },
+    created: function() {
+    this.APICallMovieGenre() 
+    // this.APICallTv(this.firstResult) 
     },
     components:{
         CountryFlag,
@@ -107,7 +116,6 @@ export default {
             return language
         },
         poster(string) {
-            console.log(this.imgUrl+string)
             if (this.imgUrl+string === 'https://image.tmdb.org/t/p/w342/null'){
                 return require('../assets/img/not_found.png')
             }
@@ -115,13 +123,11 @@ export default {
         },
         stars(number) {
             let starsNumber = Math.ceil(number/2).toFixed(0);
-            console.log(starsNumber)
             return parseInt(starsNumber);
         },
-         APICallMovieCredits(filmId) {
+        APICallMovieCredits(filmId) {
                 axios.get(`https://api.themoviedb.org/3/movie/${filmId}/credits?api_key=e99307154c6dfb0b4750f6603256716d&language=it_IT`)
                     .then(res => {
-                        console.log(res.data.cast)
                         return this.movieCredits = res.data.cast
                     })
                     .catch(err => {
@@ -131,13 +137,28 @@ export default {
           APICallTvCredits(tvId) {
                 axios.get(`https://api.themoviedb.org/3//person/${tvId}/tv_credits?api_key=e99307154c6dfb0b4750f6603256716d&language=it_IT`)
                     .then(res => {
-                        console.log(res.data.cast)
                         return this.tvCredits = res.data.cast
                     })
                     .catch(err => {
                         console.log(err)
                     })
           },
+          APICallMovieGenre() {
+                axios.get('https://api.themoviedb.org/3/genre/movie/list?api_key=e99307154c6dfb0b4750f6603256716d')
+                    .then(res => {
+                        return this.movieId = res.data.genres
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        })
+          },
+          checkGenre(id) {
+              for(let i = 0; i < this.movieId.length; i++){
+                  console.log(this.movieId[i].id)
+                  if(this.movieId[i].id === id)
+                    return this.movieId[i].name
+              }
+          }
     }
 }
 </script>
@@ -255,6 +276,9 @@ export default {
                 font-size: .9rem;
                 padding: 0 10px;
             }
+        .genres {
+            color: red;
+        }
         // @keyframes myAnim {
         //     0% {
         //         transform: scaleX(1);
@@ -273,5 +297,3 @@ export default {
     }
 }
 </style>
-
- 
