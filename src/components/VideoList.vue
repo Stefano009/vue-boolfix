@@ -2,7 +2,7 @@
   <div class="wrapper">
       <h1>FILM</h1>
       <ul>
-        <li  v-for="video in videosArray" :key="video.id">
+        <li v-show=" filterOption(video.genre_ids)" v-for="video in videosArray" :key="video.id">
             <div @mouseleave="toggleFunctionLeave" @click="toggleFunction(video.id)" class="inner">
                 <div class="card-front">
                 <img :src="poster(video.poster_path)" :alt="video.title">
@@ -33,7 +33,7 @@
       </ul>
       <h1>TV SERIES</h1>
       <ul>
-          <li v-for="tv in tvArray" :key="tv.id">
+          <li v-show=" filterOption(tv.genre_ids)" v-for="tv in tvArray" :key="tv.id">
             <div @mouseleave="toggleFunctionLeave" @click="toggleTv(tv.id)" class="inner">
                 <div class="card-front">
                   <img :src="poster(tv.poster_path)" :alt="tv.title">
@@ -79,11 +79,22 @@ export default {
            tvCredits:[],
            toggle:false,
            movieId: [],
+           allId: [],
+           optionObject:{}
        }
     },
     created: function() {
     this.APICallMovieGenre() 
+    this.APICallTvGenre() 
     // this.APICallTv(this.firstResult) 
+    },
+    computed: {
+            filter() {
+                if (this.option == '' || this.option == 'selected' ) 
+                    return this.allId
+               return this.option
+            }
+
     },
     components:{
         CountryFlag,
@@ -92,9 +103,18 @@ export default {
     props: {
         videosArray : Array,
         tvArray : Array,
-        option : String,
+        option : Object,
     },
     methods:{
+        filterOption(array) {
+                if (this.filter == this.allId)
+                    return true
+                for (let i = 0; i < array.length; i++){
+                if (this.filter.id == array[1])
+                    return true
+                return false
+            }
+        },
         toggleFunction(index) {
             this.toggle = !this.toggle
             console.log(index)
@@ -147,7 +167,8 @@ export default {
                     })
           },
           APICallMovieGenre() {
-                axios.get('https://api.themoviedb.org/3/genre/movie/list?api_key=e99307154c6dfb0b4750f6603256716d')
+                axios
+                    .get('https://api.themoviedb.org/3/genre/movie/list?api_key=e99307154c6dfb0b4750f6603256716d')
                     .then(res => {
                         return this.movieId = res.data.genres
                     })
@@ -155,11 +176,21 @@ export default {
                         console.log(err)
                         })
           },
+          APICallTvGenre() {
+                axios
+                    .get('https://api.themoviedb.org/3/genre/tv/list?api_key=e99307154c6dfb0b4750f6603256716d')
+                    .then(res => {
+                        return this.allId = this.movieId.concat(res.data.genres)
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        })
+          },
           checkGenre(id) {
-              for(let i = 0; i < this.movieId.length; i++){
-                  console.log(this.movieId[i].id)
-                  if(this.movieId[i].id === id)
-                    return this.movieId[i].name
+              for(let i = 0; i < this.allId.length; i++){
+                  console.log(this.allId[i].id)
+                  if(this.allId[i].id === id)
+                    return this.allId[i].name
               }
           }
     }

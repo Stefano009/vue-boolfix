@@ -5,8 +5,8 @@
     </div>
     <div class="search">
       <select @change="$emit('option', selected)" v-model="selected" name="genres" id="">
-        <option value="">Select genre</option>
-        <option v-for="genre in movieId" :value="genre.name" :key="genre.id" > {{ genre.name }}</option>
+        <option value="selected">Select genre</option>
+        <option v-for="genre in allId" :value="genre" :key="genre.id" > {{ genre.name }}</option>
       </select>
       <input @keyup.enter="userQuery" v-model="searchMovie" type="text">
       <button @click="userQuery" >Search</button>
@@ -21,13 +21,15 @@ export default {
   data() {
     return{
       searchMovie: '',
-      selected: '',
+      selected: {},
       movieId: [],
+      allId: [],
 
     }
   },
   created: function() {
     this.APICallMovieGenre() 
+    this.APICallTvGenre() 
     // this.APICallTv(this.firstResult) 
     },
   methods: {
@@ -42,7 +44,17 @@ export default {
                     .catch(err => {
                         console.log(err)
                         })
-        }
+    },
+    APICallTvGenre() {
+                axios
+                    .get('https://api.themoviedb.org/3/genre/tv/list?api_key=e99307154c6dfb0b4750f6603256716d')
+                    .then(res => {
+                        return this.allId = this.movieId.concat(res.data.genres)
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        })
+          },
   }
 }
 </script>

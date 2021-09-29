@@ -49,8 +49,8 @@ export default {
     queryStorer(text) {
       this.queryDigested = text
     },
-    selectedOption(text){
-      this.option = text;
+    selectedOption(number){
+      this.option = number;
     },
     APICall(queryStorer) {
                 axios.get(this.APIUrl+this.typeOfVideos.film+this.APIKey+this.APILanguage+this.query+queryStorer)
